@@ -950,7 +950,7 @@
     #nudgeBonusList { gap: 8px !important; margin-bottom: 14px !important; }
   }
 </style>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<!-- Cloudflare Turnstile removed: blocked in RU -->
 </head>
 <body>
 
@@ -1081,7 +1081,7 @@
         <input type="checkbox" id="consentCheck" style="margin-top:2px; accent-color:var(--accent); min-width:22px; min-height:22px; cursor:pointer;">
         <span>Даю согласие на <a href="/privacy" target="_blank" style="color:var(--accent);">обработку персональных данных</a> в соответствии с 152-ФЗ</span>
       </label>
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAAC8e7XBs9of8FNMR" data-theme="dark" data-expired-callback="onTurnstileExpired" data-error-callback="onTurnstileExpired" data-timeout-callback="onTurnstileExpired" style="display:flex;justify-content:center;margin-bottom:16px;"></div>
+      <!-- Cloudflare Turnstile widget removed: blocked in RU -->
       <button class="submit-btn" onclick="submitForm()">
         УЧАСТВУЮ В РОЗЫГРЫШЕ
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
@@ -1262,7 +1262,7 @@
 
   // Turnstile auto-reset когда токен истёк / челлендж упал / истёк таймер
   window.onTurnstileExpired = function () {
-    try { window.turnstile && window.turnstile.reset(); } catch (e) {}
+    
   };
 
   async function submitForm() {
@@ -1288,12 +1288,6 @@
       return;
     }
 
-    const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
-    if (!turnstileToken) {
-      alert('Подожди пока пройдёт проверка безопасности');
-      return;
-    }
-
     const btn = document.querySelector('.submit-btn');
     btn.disabled = true;
     btn.textContent = 'ОТПРАВЛЯЮ...';
@@ -1302,7 +1296,7 @@
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, bonuses, turnstileToken })
+        body: JSON.stringify({ email, bonuses })
       });
 
       if (res.status === 201 || res.status === 409) {
@@ -1316,7 +1310,7 @@
         btn.textContent = 'УЧАСТВУЮ В РОЗЫГРЫШЕ';
       } else if (res.status === 403) {
         // Turnstile одноразовый — после провала сразу пересоздаём челлендж
-        try { window.turnstile && window.turnstile.reset(); } catch (e) {}
+        
         alert('Защита от ботов истекла. Подожди пару секунд и попробуй ещё раз.');
         btn.disabled = false;
         btn.textContent = 'УЧАСТВУЮ В РОЗЫГРЫШЕ';
@@ -1329,7 +1323,7 @@
       }
     } catch (err) {
       // Любая другая ошибка — сбрасываем токен на всякий случай, чтобы юзер не залип
-      try { window.turnstile && window.turnstile.reset(); } catch (e) {}
+      
       alert('Ошибка отправки. Попробуй ещё раз через минуту.');
       btn.disabled = false;
       btn.textContent = 'УЧАСТВУЮ В РОЗЫГРЫШЕ';
