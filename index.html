@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Розыгрыш Claude — Mastodont AI Hub</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23E5A52B'/><path d='M18 4L8 18h6l-2 10 10-14h-6z' fill='%23000'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0A;
+    --bg-card: #131313;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --text: #F5F5F5;
+    --text-dim: #8A8A8A;
+    --text-dimmer: #5A5A5A;
+    --accent: #E5A52B;
+    --accent-glow: rgba(229, 165, 43, 0.15);
+    --claude: #D97757;
+    --success: #4ADE80;
+    --radius: 20px;
+    --radius-sm: 12px;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --display: 'Unbounded', system-ui, sans-serif;
+    --body: 'Onest', system-ui, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Nav — минималистичная */
+  .nav {
+    padding: 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .nav-back {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+
+  .nav-back:hover { color: var(--text); }
+
+  /* HERO — вся суть в первом экране */
+  .hero {
+    padding: 70px 0 40px;
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 32px;
+  }
+
+  .badge::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--success);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(42px, 9vw, 120px);
+    line-height: 0.86;
+    letter-spacing: -0.035em;
+    margin-bottom: 28px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .hero-title .yellow {
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-line {
+    font-size: 17px;
+    color: var(--text-dim);
+    margin-bottom: 44px;
+    line-height: 1.55;
+  }
+
+  .hero-line strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .hero-line .rf {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Призы — компактная карточка в первом экране */
+  .prizes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    max-width: 640px;
+    margin: 0 auto 40px;
+  }
+
+  .prize {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 22px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .prize.main {
+    background: linear-gradient(135deg, rgba(229,165,43,0.08), rgba(229,165,43,0.02));
+    border-color: rgba(229,165,43,0.28);
+  }
+
+  .prize-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 11px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .prize-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .prize-info { flex: 1; min-width: 0; }
+
+  .prize-count {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .prize-name {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .prize-price {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  /* CTA кнопка — главная, ведёт к форме */
+  .cta-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 44px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--bg);
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .cta-main:hover {
+    background: #F5B433;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 50px -10px var(--accent);
+  }
+
+  .cta-main svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* FORM — основной блок, всё в одной карточке */
+  .form-section {
+    padding: 40px 0 60px;
+  }
+
+  .form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 48px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .form-card::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .form-title-block {
+    text-align: center;
+    margin-bottom: 36px;
+    position: relative;
+  }
+
+  .form-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+
+  .form-label::before { content: '⚡ '; }
+
+  .form-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  /* Обязательные условия — компактно */
+  .required-block {
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .block-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  .subscribe-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .sub-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .sub-btn:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--border-strong);
+  }
+
+  .sub-btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .sub-btn-icon.tg { background: #229ED9; }
+  .sub-btn-icon.yt { background: #FF0000; }
+
+  .sub-btn-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+  }
+
+  .sub-btn-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sub-btn-platform {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1px;
+  }
+
+  .sub-btn-name {
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .email-input {
+    width: 100%;
+    padding: 17px 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 15px;
+    transition: all 0.2s;
+  }
+
+  .email-input::placeholder { color: var(--text-dimmer); }
+
+  .email-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(229,165,43,0.05);
+  }
+
+  /* Bonus — компактнее */
+  .bonus-block {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .bonus-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .bonus-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  .bonus-label::before { content: '🔥 '; }
+
+  .bonus-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 19px;
+    margin-bottom: 4px;
+  }
+
+  .bonus-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .bonus-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bonus-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    padding: 16px 18px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .bonus-item:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(229,165,43,0.2);
+  }
+
+  .bonus-item.checked {
+    background: rgba(229,165,43,0.06);
+    border-color: rgba(229,165,43,0.35);
+  }
+
+  .bonus-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-strong);
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .bonus-item.checked .bonus-checkbox {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .bonus-item.checked .bonus-checkbox::after {
+    content: '✓';
+    color: var(--bg);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .bonus-name {
+    flex: 1;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .bonus-plus {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 9px;
+    background: rgba(229,165,43,0.1);
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .bonus-link {
+    width: 100%;
+    margin-left: 34px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid rgba(229,165,43,0.3);
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-align: center;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .bonus-link:hover {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+  }
+
+  /* Submit */
+  .submit-btn {
+    margin-top: 28px;
+    width: 100%;
+    padding: 20px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--bg);
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .submit-btn:hover {
+    background: #F5B433;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 40px -10px var(--accent);
+  }
+
+  .submit-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .form-note {
+    text-align: center;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Modal — попап с инструкцией */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  #playlistModal {
+    z-index: 200;
+    padding: 20px;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 44px 40px 40px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Nudge-модалка — крупная и читаемая */
+  #nudgeModal .modal {
+    padding: 44px 48px 40px;
+    max-width: 760px;
+    max-height: 95vh;
+  }
+  #nudgeModal .bonus-item {
+    padding: 18px 22px;
+    gap: 12px 16px;
+  }
+  #nudgeModal .bonus-name {
+    font-size: 18px;
+  }
+  #nudgeModal .bonus-plus {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+  #nudgeModal .bonus-link {
+    width: auto;
+    margin-left: 0;
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+  #nudgeModal .nudge-check {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 34px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+  }
+
+  .modal-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+
+  .modal-label::before { content: '📖 '; }
+
+  .modal-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+
+  .modal-platform {
+    margin-bottom: 24px;
+    padding: 22px 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+
+  .modal-platform:last-child {
+    margin-bottom: 0;
+  }
+
+  .platform-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .platform-title .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    counter-reset: step;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .step-item::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: rgba(229, 165, 43, 0.1);
+    border: 1px solid rgba(229, 165, 43, 0.3);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .step-item strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .modal-note {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dimmer);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Help link внутри bonus-name */
+  .help-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(229, 165, 43, 0.1);
+    border: 1px solid rgba(229, 165, 43, 0.35);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .help-link:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* Final — короткий блок про итоги */
+  .final {
+    padding: 0 0 40px;
+  }
+
+  .final-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px 44px;
+    text-align: center;
+  }
+
+  .final-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+
+  .final-label::before { content: '🎬 '; }
+
+  .final-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .final-desc {
+    font-size: 14px;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Rules — очень мелко */
+  .rules {
+    padding: 0 0 40px;
+  }
+
+  .rules-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+  }
+
+  .rules-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 16px;
+  }
+
+  .rules-title::before { content: '📋 '; }
+
+  .rules p {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  .rules p + p { margin-top: 10px; }
+
+  /* Footer */
+  .footer {
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-brand,
+  .footer-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .container { padding: 0 18px; }
+    .hero { padding: 40px 0 30px; }
+    .prizes { grid-template-columns: 1fr; }
+    .subscribe-row { grid-template-columns: 1fr; }
+    .form-card, .final-card { padding: 32px 22px; }
+    .footer { flex-direction: column; text-align: center; }
+
+    /* Nudge-модалка — компактнее на мобиле */
+    #nudgeModal { padding: 12px; }
+    #nudgeModal .modal {
+      padding: 26px 20px 22px;
+      max-width: 100%;
+    }
+    #nudgeModal .bonus-item {
+      padding: 12px 14px;
+      gap: 8px 10px;
+    }
+    #nudgeModal .bonus-name { font-size: 14px; }
+    #nudgeModal .bonus-plus { font-size: 10px; padding: 4px 8px; }
+    #nudgeModal .bonus-link { font-size: 10px; padding: 6px 10px; }
+    #nudgeModal .nudge-check { width: 20px !important; height: 20px !important; }
+    #nudgeModal button[onclick^="var checked"] {
+      font-size: 14px !important;
+      padding: 16px 20px !important;
+    }
+    #nudgeModal button[onclick^="closeNudge"] {
+      font-size: 11px !important;
+      padding: 12px 18px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-title { font-size: 44px; letter-spacing: -0.03em; }
+
+    /* Заголовок модалки — ещё уменьшить */
+    #nudgeModal .modal-title {
+      font-size: 22px !important;
+      margin-bottom: 6px !important;
+    }
+    #nudgeModal .modal > div[style*="text-align:center"] > div:first-child {
+      font-size: 40px !important;
+      margin-bottom: 8px !important;
+    }
+    #nudgeModal .modal > div[style*="text-align:center"] > p {
+      font-size: 12px !important;
+      margin-bottom: 16px !important;
+    }
+    #nudgeBonusList { gap: 8px !important; margin-bottom: 14px !important; }
+  }
+</style>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="/" class="logo">
+      <img src="images/logo.png" alt="Mastodont Logo" class="logo-mark">
+      <span>MASTODONT AI HUB</span>
+    </a>
+    <a href="/" class="nav-back">← НА ГЛАВНУЮ</a>
+  </nav>
+
+  <!-- HERO — всё важное в первом экране -->
+  <section class="hero">
+    <div class="badge">РОЗЫГРЫШ • ИТОГИ 21 МАЯ • 2026</div>
+
+    <h1 class="hero-title">
+      РОЗЫГРЫШ<br>
+      <span class="yellow">CLAUDE</span>
+    </h1>
+
+    <p class="hero-line">
+      <strong>Итоги 21 мая. 6 победителей.</strong><br>
+      Из любой страны — <span class="rf">даже из РФ, без VPN</span>.
+    </p>
+
+    <!-- Призы компактно -->
+    <div class="prizes">
+      <div class="prize main">
+        <div class="prize-icon">
+          <img src="images/claude-ai-icon.png" alt="Claude AI Icon">
+        </div>
+        <div class="prize-info">
+          <div class="prize-count">🏆 1 ШТ</div>
+          <div class="prize-name">Claude Code Max</div>
+          <div class="prize-price">$100 / месяц</div>
+        </div>
+      </div>
+      <div class="prize">
+        <div class="prize-icon">
+          <img src="images/claude-ai-icon.png" alt="Claude AI Icon">
+        </div>
+        <div class="prize-info">
+          <div class="prize-count">🎁 5 ШТ</div>
+          <div class="prize-name">Claude Pro</div>
+          <div class="prize-price">$20 / месяц</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Главная CTA кнопка — скроллит к форме -->
+    <a href="#form" class="cta-main">
+      УЧАСТВОВАТЬ В РОЗЫГРЫШЕ
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <path d="M12 5v14M19 12l-7 7-7-7"/>
+      </svg>
+    </a>
+  </section>
+
+  <!-- FORM — вся механика в одной карточке -->
+  <section class="form-section" id="form">
+    <div class="form-card">
+      <div class="form-title-block">
+        <div class="form-label">КАК УЧАСТВОВАТЬ</div>
+        <h2 class="form-title">Заполни и участвуй</h2>
+      </div>
+
+      <!-- Обязательные условия -->
+      <div class="required-block">
+        <div class="block-label">ШАГ 1 — ПОДПИСАТЬСЯ НА TELEGRAM И YOUTUBE</div>
+        <div class="subscribe-row">
+          <a href="https://t.me/+JULf3S7rEBg2ZTVi" class="sub-btn" target="_blank">
+            <div class="sub-btn-icon tg">
+              <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+            </div>
+            <div class="sub-btn-info">
+              <div class="sub-btn-platform">TELEGRAM</div>
+              <div class="sub-btn-name">AI МАСТОДОНТ</div>
+            </div>
+          </a>
+          <a href="https://www.youtube.com/@aiBoomb" class="sub-btn" target="_blank">
+            <div class="sub-btn-icon yt">
+              <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </div>
+            <div class="sub-btn-info">
+              <div class="sub-btn-platform">YOUTUBE</div>
+              <div class="sub-btn-name">AI МАСТОДОНТ</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="required-block">
+        <div class="block-label">ШАГ 2 — ОСТАВИТЬ EMAIL</div>
+        <input type="email" class="email-input" placeholder="your@email.com" id="emailField">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--accent); margin-top:8px; text-transform:uppercase; letter-spacing:0.06em;">Единственный способ связи с победителем — укажи настоящий</div>
+      </div>
+
+      <!-- Bonus block -->
+      <div class="bonus-block">
+        <div class="bonus-header">
+          <div class="bonus-label">ШАГ 3 — БОНУСЫ</div>
+          <div class="bonus-title">Увеличь свои шансы</div>
+          <div class="bonus-sub">КАЖДОЕ ДЕЙСТВИЕ = ЕЩЁ ОДИН ШАНС</div>
+        </div>
+        <div class="bonus-list">
+          <div class="bonus-item" data-bonus="playlist">
+            <div class="bonus-checkbox"></div>
+            <div class="bonus-name">Добавить видео в плейлист <span class="help-link" onclick="openModal(event)">?</span></div>
+            <div class="bonus-plus">+1 шанс</div>
+            <a href="https://www.youtube.com/watch?v=Pcw3e4lrBvw" target="_blank" onclick="event.stopPropagation();" class="bonus-link">ОТКРЫТЬ ВИДЕО</a>
+          </div>
+          <div class="bonus-item" data-bonus="share">
+            <div class="bonus-checkbox"></div>
+            <div class="bonus-name">
+              Поделиться видео
+              <div style="font-size:11px; color:var(--text-dim); font-weight:400; margin-top:3px; letter-spacing:0; font-family:var(--body); line-height:1.4;">Можно даже себе в «Избранное» в Telegram</div>
+            </div>
+            <div class="bonus-plus">+1 шанс</div>
+            <a href="https://www.youtube.com/watch?v=Pcw3e4lrBvw" target="_blank" onclick="event.stopPropagation();" class="bonus-link">ОТКРЫТЬ ВИДЕО</a>
+          </div>
+        </div>
+      </div>
+
+      <label id="consentLabel" style="display:flex; align-items:flex-start; gap:12px; margin-bottom:18px; padding:16px 18px; cursor:pointer; font-size:13px; color:var(--text-dim); line-height:1.5; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:var(--radius-sm);">
+        <input type="checkbox" id="consentCheck" style="margin-top:2px; accent-color:var(--accent); min-width:22px; min-height:22px; cursor:pointer;">
+        <span>Даю согласие на <a href="/privacy" target="_blank" style="color:var(--accent);">обработку персональных данных</a> в соответствии с 152-ФЗ</span>
+      </label>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAC8e7XBs9of8FNMR" data-theme="dark" data-expired-callback="onTurnstileExpired" data-error-callback="onTurnstileExpired" data-timeout-callback="onTurnstileExpired" style="display:flex;justify-content:center;margin-bottom:16px;"></div>
+      <button class="submit-btn" onclick="submitForm()">
+        УЧАСТВУЮ В РОЗЫГРЫШЕ
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </button>
+      <div class="form-note" style="color:var(--accent);">ПРОВЕРЯЮ УСЛОВИЯ У ПОБЕДИТЕЛЕЙ ПЕРЕД ВЫДАЧЕЙ ПРИЗА</div>
+
+      <!-- Success screen — hidden by default -->
+      <div id="successScreen" style="display:none; text-align:center; padding:40px 0;">
+        <div style="font-size:64px; margin-bottom:20px;">✅</div>
+        <div style="font-family:var(--display); font-weight:700; font-size:clamp(24px,3.5vw,32px); margin-bottom:12px;">Ты в розыгрыше!</div>
+        <div style="color:var(--text-dim); font-size:14px; margin-bottom:24px;">Итоги 21 мая в Telegram.<br>Связываюсь с победителем по email.</div>
+        <a href="https://t.me/+JULf3S7rEBg2ZTVi" target="_blank" style="display:inline-block; padding:14px 32px; background:var(--accent); color:#000; font-family:var(--display); font-weight:700; font-size:13px; border-radius:var(--radius-sm); text-decoration:none; letter-spacing:0.02em;">СЛЕДИТЬ ЗА ИТОГАМИ В TELEGRAM</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final — короткий блок про итоги -->
+  <section class="final">
+    <div class="final-card">
+      <div class="final-label">ИТОГИ 21 МАЯ В TELEGRAM</div>
+      <div class="final-title">Видео с выбором + имена победителей</div>
+      <div class="final-desc">Связываюсь с победителем по email. Один розыгрыш — 6 победителей.</div>
+    </div>
+  </section>
+
+  <!-- Rules -->
+  <section class="rules">
+    <div class="rules-card">
+      <div class="rules-title">ПРАВИЛА РОЗЫГРЫША</div>
+      <p><strong style="color:var(--text)">Обязательные условия входа</strong> — email, подписка на Telegram-канал организатора (для связи с победителем) и подписка на YouTube-канал организатора. Участие бесплатное, никакой покупки не требуется.</p>
+      <p><strong style="color:var(--text)">Дополнительные действия (добавить видео в плейлист, поделиться видео) — опциональные бонусы.</strong> Они НЕ требуются для входа в розыгрыш и лишь увеличивают шансы. Ты можешь участвовать, не выполняя ни одного из них.</p>
+      <p>Победители выбираются <strong style="color:var(--text)">случайным алгоритмом</strong> с учётом бонусных действий. Перед выдачей приза организатор <strong style="color:var(--text)">проверяет выполнение заявленных бонусов</strong> — если не подтверждается, приз переходит к альтернативному победителю.</p>
+      <p>Организатор оставляет за собой право <strong style="color:var(--text)">исключить недобросовестные заявки</strong> (дубликаты, временные email, боты). <strong style="color:var(--text)">Решение организатора окончательное.</strong></p>
+      <p>Розыгрыш <strong style="color:var(--text)">не спонсируется, не поддерживается, не администрируется и никак иначе не связан с YouTube, Google LLC или Telegram.</strong> Все призы предоставляются и выдаются организатором за свой счёт. Упомянутые платформы освобождены от любой ответственности, связанной с проведением розыгрыша.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-brand">⚡ MASTODONT AI HUB — 2026</div>
+    <div class="footer-meta">ДЕРЖИМ ТЕМП!</div>
+  </footer>
+  <div style="padding:14px 0 28px; text-align:center; font-family:var(--mono); font-size:10px; color:var(--text-dimmer); line-height:1.6; letter-spacing:0.04em; max-width:720px; margin:0 auto;">
+    РОЗЫГРЫШ НЕ СПОНСИРУЕТСЯ, НЕ ПОДДЕРЖИВАЕТСЯ И НЕ АДМИНИСТРИРУЕТСЯ YOUTUBE, GOOGLE LLC ИЛИ TELEGRAM.<br>
+    ПРИЗЫ ПРЕДОСТАВЛЯЮТСЯ ОРГАНИЗАТОРОМ ЗА СВОЙ СЧЁТ. ТОВАРНЫЕ ЗНАКИ ПРИНАДЛЕЖАТ ПРАВООБЛАДАТЕЛЯМ.
+  </div>
+
+</div>
+
+<!-- Modal: как добавить в плейлист -->
+<div class="modal-overlay" id="playlistModal" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-label">ЗАНИМАЕТ 10 СЕКУНД</div>
+    <h3 class="modal-title">Как добавить видео в плейлист</h3>
+
+    <div class="modal-platform">
+      <div class="steps">
+        <div class="step-item">Открой видео на YouTube (с телефона или компьютера)</div>
+        <div class="step-item">Нажми кнопку <strong>«Сохранить»</strong> под видео</div>
+        <div class="step-item">Выбери <strong>«Посмотреть позже»</strong> — готово!</div>
+      </div>
+    </div>
+
+    <div class="modal-note">Вернись сюда и отметь галочку</div>
+  </div>
+</div>
+
+<!-- Modal: nudge bonus actions -->
+<div class="modal-overlay" id="nudgeModal" onclick="closeNudge(event)">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:540px;">
+    <button class="modal-close" onclick="closeNudge()">&#10005;</button>
+    <div style="text-align:center;">
+      <div style="font-size:56px; margin-bottom:14px; line-height:1;">&#127942;</div>
+      <h3 class="modal-title" style="font-size:32px; margin-bottom:10px;">Увеличь шансы на победу!</h3>
+      <p style="color:var(--text-dim); font-size:16px; margin-bottom:28px;">Итоги 21 мая — каждая галочка = +1 шанс</p>
+    </div>
+    <div id="nudgeBonusList" style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
+      <div data-nudge-bonus="playlist" class="bonus-item" style="flex-wrap:wrap;">
+        <div class="nudge-check" style="width:20px; height:20px; border-radius:6px; border:2px solid var(--text-dimmer); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.2s;"></div>
+        <div class="bonus-name">Добавить видео в плейлист <span class="help-link" onclick="event.stopPropagation(); openModal(event);">?</span></div>
+        <div class="bonus-plus">+1 шанс</div>
+        <a href="https://www.youtube.com/watch?v=Pcw3e4lrBvw" target="_blank" onclick="event.stopPropagation();" class="bonus-link">ОТКРЫТЬ ВИДЕО</a>
+      </div>
+      <div data-nudge-bonus="share" class="bonus-item" style="flex-wrap:wrap;">
+        <div class="nudge-check" style="width:20px; height:20px; border-radius:6px; border:2px solid var(--text-dimmer); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.2s;"></div>
+        <div class="bonus-name">
+          Поделиться видео
+          <div style="font-size:11px; color:var(--text-dim); font-weight:400; margin-top:3px; letter-spacing:0; font-family:var(--body); line-height:1.4;">Можно даже себе в «Избранное» в Telegram</div>
+        </div>
+        <div class="bonus-plus">+1 шанс</div>
+        <a href="https://www.youtube.com/watch?v=Pcw3e4lrBvw" target="_blank" onclick="event.stopPropagation();" class="bonus-link">ОТКРЫТЬ ВИДЕО</a>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <button onclick="var checked=document.querySelectorAll('[data-nudge-bonus].checked');if(!checked.length){document.querySelectorAll('[data-nudge-bonus]').forEach(function(el){el.style.border='1px solid rgba(229,165,43,0.5)';setTimeout(function(){el.style.border='1px solid var(--border)'},1500)});return;}syncNudgeBonuses();closeNudge();window._nudgeShown=true;submitForm();" style="padding:20px 28px; background:var(--accent); color:#000; font-family:var(--display); font-weight:700; font-size:16px; border:none; border-radius:var(--radius-sm); cursor:pointer; letter-spacing:0.02em; transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 0 30px rgba(229,165,43,0.4)'" onmouseout="this.style.boxShadow='none'">УЧАСТВУЮ С БОНУСАМИ</button>
+      <button onclick="closeNudge(); window._nudgeShown=true; submitForm();" style="padding:16px 24px; background:transparent; color:var(--text-dimmer); font-family:var(--mono); font-size:12px; border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; text-transform:uppercase; letter-spacing:0.08em;">отправить как есть</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Bonus checkbox toggle (только главная форма, nudge-модалка имеет свой обработчик ниже)
+  document.querySelectorAll('.bonus-item:not([data-nudge-bonus])').forEach(item => {
+    item.addEventListener('click', (e) => {
+      // Не переключаем галочку если клик был по help-кнопке
+      if (e.target.classList.contains('help-link')) return;
+      item.classList.toggle('checked');
+    });
+  });
+
+  // Modal controls
+  function openModal(event) {
+    event.stopPropagation();
+    document.getElementById('playlistModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(event) {
+    if (event && event.target !== event.currentTarget && event.type === 'click') {
+      if (!event.target.classList.contains('modal-close') &&
+          !event.target.classList.contains('modal-overlay')) return;
+    }
+    document.getElementById('playlistModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Nudge modal checkbox toggle
+  document.querySelectorAll('[data-nudge-bonus]').forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (e.target.closest('a') || e.target.classList.contains('help-link')) return;
+      item.classList.toggle('checked');
+      const check = item.querySelector('.nudge-check');
+      if (item.classList.contains('checked')) {
+        check.style.background = 'var(--accent)';
+        check.style.borderColor = 'var(--accent)';
+        check.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="4"><path d="M5 13l4 4L19 7"/></svg>';
+      } else {
+        check.style.background = 'transparent';
+        check.style.borderColor = 'var(--text-dimmer)';
+        check.innerHTML = '';
+      }
+    });
+  });
+
+  // Sync nudge modal checkboxes back to main form
+  function syncNudgeBonuses() {
+    document.querySelectorAll('[data-nudge-bonus]').forEach(nudgeItem => {
+      const bonus = nudgeItem.dataset.nudgeBonus;
+      const mainItem = document.querySelector(`.bonus-item[data-bonus="${bonus}"]`);
+      if (nudgeItem.classList.contains('checked') && mainItem) {
+        mainItem.classList.add('checked');
+      }
+    });
+  }
+
+  function closeNudge(event) {
+    if (event && event.target !== event.currentTarget && event.type === 'click') {
+      if (!event.target.classList.contains('modal-close') &&
+          !event.target.classList.contains('modal-overlay')) return;
+    }
+    document.getElementById('nudgeModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Close modals on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('playlistModal').classList.remove('active');
+      document.getElementById('nudgeModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+
+  const API_URL = '/api/submit';
+
+  // Turnstile auto-reset когда токен истёк / челлендж упал / истёк таймер
+  window.onTurnstileExpired = function () {
+    try { window.turnstile && window.turnstile.reset(); } catch (e) {}
+  };
+
+  async function submitForm() {
+    if (!document.getElementById('consentCheck').checked) {
+      alert('Нужно согласие на обработку персональных данных');
+      return;
+    }
+
+    const email = document.getElementById('emailField').value.trim();
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      alert('Укажи корректный email для связи');
+      return;
+    }
+
+    const bonuses = Array.from(document.querySelectorAll('.bonus-item.checked'))
+      .map(el => el.dataset.bonus);
+
+    // Nudge: if no bonuses — show modal, let user choose
+    if (bonuses.length === 0 && !window._nudgeShown) {
+      window._nudgeShown = true;
+      document.getElementById('nudgeModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      return;
+    }
+
+    const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+    if (!turnstileToken) {
+      alert('Подожди пока пройдёт проверка безопасности');
+      return;
+    }
+
+    const btn = document.querySelector('.submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'ОТПРАВЛЯЮ...';
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, bonuses, turnstileToken })
+      });
+
+      if (res.status === 201 || res.status === 409) {
+        // Hide form elements, show success screen
+        document.querySelectorAll('.required-block, .bonus-block, .cf-turnstile, .submit-btn, .form-note, #consentLabel, .form-title-block').forEach(el => el.style.display = 'none');
+        document.getElementById('emailField').parentElement.style.display = 'none';
+        document.getElementById('successScreen').style.display = 'block';
+      } else if (res.status === 429) {
+        alert('Слишком много запросов. Попробуй позже.');
+        btn.disabled = false;
+        btn.textContent = 'УЧАСТВУЮ В РОЗЫГРЫШЕ';
+      } else if (res.status === 403) {
+        // Turnstile одноразовый — после провала сразу пересоздаём челлендж
+        try { window.turnstile && window.turnstile.reset(); } catch (e) {}
+        alert('Защита от ботов истекла. Подожди пару секунд и попробуй ещё раз.');
+        btn.disabled = false;
+        btn.textContent = 'УЧАСТВУЮ В РОЗЫГРЫШЕ';
+      } else if (res.status === 400) {
+        alert('Email указан неверно — проверь адрес.');
+        btn.disabled = false;
+        btn.textContent = 'УЧАСТВУЮ В РОЗЫГРЫШЕ';
+      } else {
+        throw new Error(`Status ${res.status}`);
+      }
+    } catch (err) {
+      // Любая другая ошибка — сбрасываем токен на всякий случай, чтобы юзер не залип
+      try { window.turnstile && window.turnstile.reset(); } catch (e) {}
+      alert('Ошибка отправки. Попробуй ещё раз через минуту.');
+      btn.disabled = false;
+      btn.textContent = 'УЧАСТВУЮ В РОЗЫГРЫШЕ';
+    }
+  }
+</script>
+
+</body>
+</html>
