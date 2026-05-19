@@ -1301,7 +1301,7 @@
 
       if (res.status === 201 || res.status === 409) {
         // Hide form elements, show success screen
-        document.querySelectorAll('.required-block, .bonus-block, .cf-turnstile, .submit-btn, .form-note, #consentLabel, .form-title-block').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.required-block, .bonus-block, .submit-btn, .form-note, #consentLabel, .form-title-block').forEach(el => el.style.display = 'none');
         document.getElementById('emailField').parentElement.style.display = 'none';
         document.getElementById('successScreen').style.display = 'block';
       } else if (res.status === 429) {
