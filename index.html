@@ -967,7 +967,7 @@
 
   <!-- HERO — всё важное в первом экране -->
   <section class="hero">
-    <div class="badge">РОЗЫГРЫШ • ИТОГИ 30 МАЯ • 2026</div>
+    <div class="badge">СЛЕДУЮЩИЙ РОЗЫГРЫШ СОВСЕМ СКОРО</div>
 
     <h1 class="hero-title">
       РОЗЫГРЫШ<br>
@@ -975,8 +975,8 @@
     </h1>
 
     <p class="hero-line">
-      <strong>Итоги 30 мая. 6 победителей.</strong><br>
-      Из любой страны — <span class="rf">даже из РФ, без VPN</span>.
+      <strong>Розыгрыш завершён — победители уже выбраны.</strong><br>
+      Следующий стартует <span class="rf">совсем скоро</span>. Не пропусти.
     </p>
 
     <!-- Призы компактно -->
@@ -1003,17 +1003,38 @@
       </div>
     </div>
 
-    <!-- Главная CTA кнопка — скроллит к форме -->
-    <a href="#form" class="cta-main">
-      УЧАСТВОВАТЬ В РОЗЫГРЫШЕ
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-        <path d="M12 5v14M19 12l-7 7-7-7"/>
+    <!-- Главная CTA кнопка — ведёт в Telegram (розыгрыш на паузе) -->
+    <a href="https://t.me/+JULf3S7rEBg2ZTVi" target="_blank" class="cta-main">
+      СЛЕДИТЬ В TELEGRAM
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
       </svg>
     </a>
   </section>
 
-  <!-- FORM — вся механика в одной карточке -->
-  <section class="form-section" id="form">
+  <!-- ANONS — розыгрыш на паузе (форма ниже скрыта) -->
+  <section class="form-section">
+    <div class="form-card" style="text-align:center;">
+      <div style="font-size:60px; margin-bottom:18px;">⏳</div>
+      <h2 class="form-title" style="margin-bottom:18px;">Розыгрыш завершён</h2>
+      <p style="color:var(--text-dim); font-size:16px; line-height:1.6; margin:0 auto 10px; max-width:480px; position:relative;">
+        Победители уже выбраны — итоги в Telegram.<br>
+        <strong style="color:var(--text);">Следующий розыгрыш совсем скоро.</strong>
+      </p>
+      <p style="color:var(--accent); font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:30px; position:relative;">
+        Подпишись, чтобы не пропустить старт
+      </p>
+      <a href="https://t.me/+JULf3S7rEBg2ZTVi" target="_blank" class="cta-main" style="text-decoration:none; position:relative;">
+        СЛЕДИТЬ В TELEGRAM
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- FORM — скрыта на время паузы (вернуть: убрать display:none) -->
+  <section class="form-section" id="form" style="display:none;">
     <div class="form-card">
       <div class="form-title-block">
         <div class="form-label">КАК УЧАСТВОВАТЬ</div>
